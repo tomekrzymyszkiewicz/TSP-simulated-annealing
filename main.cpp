@@ -2,20 +2,20 @@
 #include <string.h>
 #include <fstream>
 #include <stdio.h>
-#include <queue>
+// #include <queue>
 #include <chrono>
 #include <vector>
 #include <random>
 #include <string>
 #include <sstream>
-#include <climits>
-#include <iterator>
+// #include <climits>
+// #include <iterator>
 #include <algorithm>
-#include <cctype>
-#include <locale>
-#include <cmath>
-#include <tuple>
-#include <unordered_set>
+// #include <cctype>
+// #include <locale>
+// #include <cmath>
+// #include<sys/resource.h>
+#include <unistd.h>
 #include "structures.h"
 using namespace std;
 using namespace std::chrono;
@@ -27,6 +27,34 @@ int number_of_current_graph_vertices = 0;
 adjacency_matrix current_graph_adjacency_matrix = adjacency_matrix();
 int *path_array;
 int ***solved_subproblems;
+
+void process_mem_usage(double &vm_usage, double &resident_set)
+{
+    using std::ifstream;
+    using std::ios_base;
+    using std::string;
+
+    vm_usage = 0.0;
+    resident_set = 0.0;
+
+    ifstream stat_stream("/proc/self/stat", ios_base::in);
+
+    string pid, comm, state, ppid, pgrp, session, tty_nr;
+    string tpgid, flags, minflt, cminflt, majflt, cmajflt;
+    string utime, stime, cutime, cstime, priority, nice;
+    string O, itrealvalue, starttime;
+
+    unsigned long vsize;
+    long rss;
+
+    stat_stream >> pid >> comm >> state >> ppid >> pgrp >> session >> tty_nr >> tpgid >> flags >> minflt >> cminflt >> majflt >> cmajflt >> utime >> stime >> cutime >> cstime >> priority >> nice >> O >> itrealvalue >> starttime >> vsize >> rss;
+
+    stat_stream.close();
+
+    long page_size_kb = sysconf(_SC_PAGE_SIZE) / 1024;
+    vm_usage = vsize / 1024.0;
+    resident_set = rss * page_size_kb;
+}
 
 struct Result
 {
@@ -191,7 +219,7 @@ void load_config()
 int cost_of_permutation(vector<int> permutation)
 {
     int cost = current_graph_adjacency_matrix.matrix[0][permutation[0]];
-    for (int i = 0; i < number_of_current_graph_vertices - 3; i++)
+    for (int i = 0; i < number_of_current_graph_vertices - 2; i++)
     {
         cost += current_graph_adjacency_matrix.matrix[permutation[i]][permutation[i + 1]];
     }
@@ -219,9 +247,9 @@ vector<int> neighborhood_permutation(vector<int> permutation)
     int first_index = (int)(dis(gen) * 10000) % permutation.size();
     int second_index = (int)(dis(gen) * 10000) % permutation.size();
 
-    if(first_index != second_index)
+    if (first_index != second_index)
         permutation = swap_permutation(permutation, first_index, second_index);
-    return  permutation;
+    return permutation;
 }
 
 float new_temp_geo(float temp, float alpha)
@@ -229,20 +257,34 @@ float new_temp_geo(float temp, float alpha)
     return temp * alpha;
 }
 
+string print_vector(vector<int> printed_vector)
+{
+    string answer;
+    for (long unsigned int i = 0; i < printed_vector.size(); i++)
+    {
+        answer += to_string(printed_vector[i]);
+        answer += " ";
+    }
+    return answer;
+}
 pair<vector<int>, int> TSP_solve()
 {
     vector<int> permutation;
     for (int i = 1; i < number_of_current_graph_vertices; i++)
         permutation.push_back(i);
     int cost = cost_of_permutation(permutation);
-    float alpha = 0.9; //minimal temperatur - stop condition
+    float alpha = 0.9999; //minimal temperatur - stop condition
     high_resolution_clock::time_point t_start = high_resolution_clock::now();
     duration<double> time = time.zero();
-    duration<double> beta = duration<double>(1000000);
+    duration<double> beta = duration<double>(100000);
     float current_temp = initial_temperature(cost, alpha);
     int era_length = 10;
-    while (current_temp > alpha && time < beta)
+    while (current_temp > alpha)
+    // while (current_temp > alpha && time < beta)
     {
+        printf("Current temp: %6lf| Cost: %6d | Time: %6lf\n",current_temp,cost,(double)time.count());
+        // cout << "Current temp: " << current_temp <<"| Cost: "<<cost<< endl;
+        // cout<<"Permutation: 0 "<<print_vector(permutation)<<"0"<<endl;
         for (int i = 0; i < era_length; i++)
         {
             vector<int> new_permutation = neighborhood_permutation(permutation);
@@ -267,9 +309,11 @@ pair<vector<int>, int> TSP_solve()
                 }
             }
         }
-        current_temp = new_temp_geo(current_temp,alpha);
+        current_temp = new_temp_geo(current_temp, alpha);
         time = duration_cast<duration<double>>(high_resolution_clock::now() - t_start);
     }
+    permutation.insert(permutation.begin(), 0);
+    permutation.push_back(0);
     return make_pair(permutation, cost);
 }
 
