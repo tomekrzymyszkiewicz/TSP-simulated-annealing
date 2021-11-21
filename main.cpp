@@ -232,6 +232,16 @@ float initial_temperature(int cost, float alpha)
     return cost * alpha;
 }
 
+vector<int> initial_permutation(int permutation_quantity){
+    vector<int> permutation;
+    for (int i = 1; i < permutation_quantity; i++)
+        permutation.push_back(i);
+    random_device rd;
+    default_random_engine rng(rd());
+    shuffle(permutation.begin(), permutation.end(), rng);
+    return permutation;
+}
+
 vector<int> swap_permutation(vector<int> permutation, int first_index, int second_index)
 {
     std::iter_swap(permutation.begin() + first_index, permutation.begin() + second_index);
@@ -279,9 +289,7 @@ string print_vector(vector<int> printed_vector)
  */
 pair<vector<int>, int> TSP_solve(float alpha = 0.9, int era_length = 1, bool cooling_method = false, bool neighborhood_method = false)
 {
-    vector<int> permutation;
-    for (int i = 1; i < number_of_current_graph_vertices; i++)
-        permutation.push_back(i);
+    vector<int> permutation = initial_permutation(number_of_current_graph_vertices);
     int cost = cost_of_permutation(permutation);
     float min_temp = 0.000001; //minimal temperature - stop condition
     float current_temp = initial_temperature(cost, alpha);
@@ -314,8 +322,6 @@ pair<vector<int>, int> TSP_solve(float alpha = 0.9, int era_length = 1, bool coo
         }
         current_temp = new_temp_geo(current_temp, alpha);
     }
-
-
 
 
     permutation.insert(permutation.begin(), 0);
