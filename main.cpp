@@ -378,7 +378,8 @@ pair<vector<int>, int> TSP_solve(float alpha = 0.999, float b = 1, int era_lengt
     float current_temp = initial_temperature();
     int same_cost_counter = 0;
     int iteration_counter = 0;
-    while (current_temp > min_temp && same_cost_counter < 50)
+    while (same_cost_counter < 50)
+    // while (current_temp > min_temp && same_cost_counter < 50)
     {
         iteration_counter++;
         if (prev_cost == cost)
