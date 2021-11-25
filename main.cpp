@@ -211,9 +211,6 @@ void load_config()
                 ++it;
             }
         }
-        for(int i = 0; i < single_line.size(); i++){
-            
-        }
         string graph_file_name, number_of_repeats, alpha, b, era_length, cooling_method, neighborhood_method, shortest_path_weight, shortest_path;
         if (single_line.size() >= 8)
         {
@@ -231,7 +228,7 @@ void load_config()
                 shortest_path += " ";
             }
         }
-        if (graph_file_name.size() == 0 || number_of_repeats.size() == 0 || alpha.size() == 0 || b.size() == 0 || era_length.size() == 0 || cooling_method.size() == 0 || neighborhood_method.size() == 0 || shortest_path_weight.size() == 0 || shortest_path.size() == 0)
+        if (graph_file_name.size() == 0 || number_of_repeats.size() == 0 || alpha.size() == 0 || b.size() == 0 || era_length.size() == 0 || cooling_method.size() == 0 || neighborhood_method.size() == 0 || shortest_path_weight.size() == 0)
         {
             std::cout << "Cannot load this task: " << loaded_line_of_task << endl;
             break;
@@ -268,9 +265,19 @@ int cost_of_permutation(vector<int> permutation)
     return cost;
 }
 
-float initial_temperature(int cost, float alpha)
+float initial_temperature(int divider_of_quantity = 5)
 {
-    return cost * alpha;
+    int sum_of_costs = 0;
+    random_device rd;
+    default_random_engine rng(rd());
+    for(int i = 0; i < number_of_current_graph_vertices/divider_of_quantity; i++){
+        vector<int> permutation;
+        for (int j = 1; j < number_of_current_graph_vertices; j++)
+            permutation.push_back(i);
+        shuffle(permutation.begin(), permutation.end(), rng);
+        sum_of_costs += cost_of_permutation(permutation);
+    }
+    return sum_of_costs/(number_of_current_graph_vertices/divider_of_quantity);
 }
 
 vector<int> initial_permutation(int permutation_quantity)
@@ -282,6 +289,13 @@ vector<int> initial_permutation(int permutation_quantity)
     default_random_engine rng(rd());
     shuffle(permutation.begin(), permutation.end(), rng);
     return permutation;
+    // vector<int> permutation;
+    // for (int i = 1; i < permutation_quantity; i++)
+    //     permutation.push_back(i);
+    // random_device rd;
+    // default_random_engine rng(rd());
+    // shuffle(permutation.begin(), permutation.end(), rng);
+    // return permutation;
 }
 
 vector<int> swap_permutation(vector<int> permutation, int first_index, int second_index)
@@ -367,10 +381,10 @@ pair<vector<int>, int> TSP_solve(float alpha = 0.999, float b = 1, int era_lengt
     int cost = cost_of_permutation(permutation);
     int prev_cost = INT32_MAX;
     float min_temp = 0.000001; //minimal temperature - stop condition
-    float current_temp = initial_temperature(cost, alpha);
+    float current_temp = initial_temperature();
     int same_cost_counter = 0;
     int iteration_counter = 0;
-    while (current_temp > min_temp && same_cost_counter < 20)
+    while (current_temp > min_temp && same_cost_counter < 50)
     {
         iteration_counter++;
         if (prev_cost == cost)
