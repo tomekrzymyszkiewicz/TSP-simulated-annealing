@@ -191,10 +191,29 @@ void load_config()
     }
     string loaded_line_of_task = "";
     getline(fin, results_file_name);
+    ltrim(results_file_name);
+    rtrim(results_file_name);
     cout << "Loaded result file name: " << results_file_name << endl;
     while (getline(fin, loaded_line_of_task))
     {
         vector<string> single_line = split(loaded_line_of_task, ' ');
+        std::vector<std::string>::iterator it = single_line.begin();
+        while (it != single_line.end())
+        {
+            if (it->length() == 0)
+            {
+                it = single_line.erase(it);
+            }
+            else
+            {
+                ltrim(*it);
+                rtrim(*it);
+                ++it;
+            }
+        }
+        for(int i = 0; i < single_line.size(); i++){
+            
+        }
         string graph_file_name, number_of_repeats, alpha, b, era_length, cooling_method, neighborhood_method, shortest_path_weight, shortest_path;
         if (single_line.size() >= 8)
         {
