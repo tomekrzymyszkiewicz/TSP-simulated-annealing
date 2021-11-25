@@ -52,8 +52,10 @@ void process_mem_usage(double &vm_usage, double &resident_set)
 struct Result
 {
     string graph_name;
-    string path;
-    int path_weight;
+    string calculated_path;
+    string defined_path;
+    int calculated_path_weight;
+    int defined_path_weight;
     double time;
     int number_of_repeats;
     float alpha;
@@ -61,11 +63,13 @@ struct Result
     int era_length;
     string cooling_method;
     string neighborhood_method;
-    Result(string graph_name, string path, int path_weight, double time, int number_of_repeats, float alpha, float b, int era_length, string cooling_method, string neighborhood_method)
+    Result(string graph_name, string calculated_path, int calculated_path_weight, string defined_path, int defined_path_weight, double time, int number_of_repeats, float alpha, float b, int era_length, string cooling_method, string neighborhood_method)
     {
         this->graph_name = graph_name;
-        this->path = path;
-        this->path_weight = path_weight;
+        this->calculated_path = calculated_path;
+        this->calculated_path_weight = calculated_path_weight;
+        this->defined_path = defined_path;
+        this->defined_path_weight = defined_path_weight;
         this->time = time;
         this->number_of_repeats = number_of_repeats;
         this->alpha = alpha;
@@ -76,7 +80,7 @@ struct Result
     }
     string toString()
     {
-        return (graph_name + "," + path + "," + to_string(path_weight) + "," + to_string(time) + "," + to_string(number_of_repeats) + "," + to_string(alpha) + "," + to_string(b) + "," + to_string(era_length) + "," + cooling_method + "," + neighborhood_method);
+        return (graph_name + "," + calculated_path + "," + to_string(calculated_path_weight) + "," + defined_path + "," + to_string(defined_path_weight) + "," + to_string(time) + "," + to_string(number_of_repeats) + "," + to_string(alpha) + "," + to_string(b) + "," + to_string(era_length) + "," + cooling_method + "," + neighborhood_method);
     }
 };
 
@@ -85,7 +89,7 @@ void save_results(string results_file_name)
     std::cout << "Saving results" << endl;
     fstream fout;
     fout.open(results_file_name, ios::out);
-    fout << "graph_name,path,path_weight,time,number_of_repeats" << endl;
+    fout << "graph_name,calculated_path,calculated_path_weight,defined_path,defined_path_weight,time,number_of_repeats,alpha,b,era_length,cooling_method,neighborhood_method" << endl;
     for (long unsigned int i = 0; i < results.size(); i++)
     {
         fout << results[i] << endl;
@@ -425,6 +429,8 @@ int main()
                 neighborhood_method = true;
             string shortest_path_weight = tasks[i][7];
             string shortest_path = tasks[i][8];
+            ltrim(shortest_path);
+            rtrim(shortest_path);
             if (!load_data(graph_file_name))
             {
                 std::cout << "Cannot load graph from " << graph_file_name << " file." << endl;
@@ -470,7 +476,7 @@ int main()
                      << "Calculated weight: " << weight << endl
                      << "Defined weight:    " << shortest_path_weight << endl
                      << "Time: " << ((double)time_span.count() / (double)number_of_repeats) << " s" << endl;
-                Result result = Result(graph_file_name, path, weight, time_span.count(), number_of_repeats,alpha,b,era_length,tasks[i][5],tasks[i][6]);
+                Result result = Result(graph_file_name, path, weight, shortest_path, stoi(shortest_path_weight), time_span.count(), number_of_repeats, alpha, b, era_length, tasks[i][5], tasks[i][6]);
                 results.push_back(result.toString());
             }
         }
