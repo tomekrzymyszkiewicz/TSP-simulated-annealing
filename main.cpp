@@ -177,32 +177,47 @@ void load_config()
     }
     string loaded_line_of_task = "";
     getline(fin, results_file_name);
+    cout<<"Loaded result file name: "<<results_file_name<<endl;
     while (getline(fin, loaded_line_of_task))
     {
         vector<string> single_line = split(loaded_line_of_task, ' ');
-        string graph_file_name, number_of_repeats, shortest_path_weight, shortest_path;
-        if (single_line.size() >= 4)
+        string graph_file_name, number_of_repeats, alpha, b, era_length, cooling_method, neighborhood_method, shortest_path_weight, shortest_path;
+        if (single_line.size() >= 8)
         {
             graph_file_name = single_line[0];
             number_of_repeats = single_line[1];
-            shortest_path_weight = single_line[2];
-            for (long unsigned int i = 3; i < single_line.size(); i++)
+            alpha = single_line[2];
+            b = single_line[3];
+            era_length = single_line[4];
+            cooling_method = single_line[5];
+            neighborhood_method = single_line[6];
+            shortest_path_weight = single_line[7];
+            for (long unsigned int i = 8; i < single_line.size(); i++)
             {
                 shortest_path += single_line[i];
                 shortest_path += " ";
             }
         }
-        if (graph_file_name.size() == 0 || number_of_repeats.size() == 0 || shortest_path_weight.size() == 0 || shortest_path.size() == 0)
+        if (graph_file_name.size() == 0 || number_of_repeats.size() == 0 || alpha.size() == 0 || b.size() == 0 || era_length.size() == 0 || cooling_method.size() == 0 || neighborhood_method.size() == 0 || shortest_path_weight.size() == 0 || shortest_path.size() == 0)
         {
-            std::cout << "Cannot load this task: " << graph_file_name << " " << number_of_repeats << " " << shortest_path_weight << " " << shortest_path;
+            std::cout <<"Cannot load this task: "<<loaded_line_of_task<<endl;
             break;
         }
         vector<string> task;
         task.push_back(graph_file_name);
         task.push_back(number_of_repeats);
+        task.push_back(alpha);
+        task.push_back(b);
+        task.push_back(era_length);
+        task.push_back(cooling_method);
+        task.push_back(neighborhood_method);
         task.push_back(shortest_path_weight);
         task.push_back(shortest_path);
         tasks.push_back(task);
+        cout<<"Correclty loaded task: ";
+        for(int i = 0; i < task.size(); i++)
+            cout<<task[i]<<" ";
+        cout<<endl;
     }
     fin.close();
     std::cout << "Config loaded correctly" << endl;
@@ -225,7 +240,8 @@ float initial_temperature(int cost, float alpha)
     return cost * alpha;
 }
 
-vector<int> initial_permutation(int permutation_quantity){
+vector<int> initial_permutation(int permutation_quantity)
+{
     vector<int> permutation;
     for (int i = 1; i < permutation_quantity; i++)
         permutation.push_back(i);
@@ -262,7 +278,7 @@ float new_temp_geo(float temp, float alpha)
 
 float new_temp_Boltzmann(float temp, float alpha, float b, int k)
 {
-    return temp/(alpha + b * log(k));
+    return temp / (alpha + b * log(k));
 }
 
 string print_vector(vector<int> printed_vector)
@@ -280,13 +296,13 @@ string print_vector(vector<int> printed_vector)
  * TSP solving with simulated annealing method
  * 
  * @param alpha cooling parameter
- * @paragraph b cooling parameter (for Boltzmann method)
+ * @param b cooling parameter (for Boltzmann method)
  * @param era_length number of iterations to find the best solution for a given temperature
  * @param cooling_method 0 - geometrical cooling | 1 - Boltzmann
  * @param neighborhood_method 0 - swap | 1 - invert
  * @return pair of calculated path and weight
  */
-pair<vector<int>, int> TSP_solve(float alpha = 0.999,float b=1, int era_length = 100, bool cooling_method = false, bool neighborhood_method = false)
+pair<vector<int>, int> TSP_solve(float alpha = 0.999, float b = 1, int era_length = 100, bool cooling_method = false, bool neighborhood_method = true)
 {
     vector<int> permutation = initial_permutation(number_of_current_graph_vertices);
     int cost = cost_of_permutation(permutation);
@@ -297,12 +313,13 @@ pair<vector<int>, int> TSP_solve(float alpha = 0.999,float b=1, int era_length =
     int iteration_counter = 0;
     while (current_temp > min_temp && same_cost_counter < 20)
     {
-        if(prev_cost == cost)
+        iteration_counter++;
+        if (prev_cost == cost)
             same_cost_counter++;
         else
             same_cost_counter = 0;
         prev_cost = cost;
-        printf("Current temp: %6lf| Cost: %6d\n",current_temp,cost);
+        printf("Current temp: %6lf| Cost: %6d\n", current_temp, cost);
         for (int i = 0; i < era_length; i++)
         {
             vector<int> new_permutation = neighborhood_permutation(permutation);
@@ -327,12 +344,10 @@ pair<vector<int>, int> TSP_solve(float alpha = 0.999,float b=1, int era_length =
                 }
             }
         }
-        if(cooling_method)
+        if (!cooling_method)
             current_temp = new_temp_geo(current_temp, alpha);
         else
-            current_temp = new_temp_Boltzmann(current_temp, alpha, b , iteration_counter);
-        iteration_counter++;
-
+            current_temp = new_temp_Boltzmann(current_temp, alpha, b, iteration_counter);
     }
     permutation.insert(permutation.begin(), 0);
     permutation.push_back(0);
@@ -355,13 +370,29 @@ int main()
                       << endl;
             string graph_file_name = tasks[i][0];
             int number_of_repeats = stoi(tasks[i][1]);
-            string shortest_path_weight = tasks[i][2];
-            string shortest_path = tasks[i][3];
+            float alpha = stof(tasks[i][2]);
+            float b = stof(tasks[i][3]);
+            int era_length = stoi(tasks[i][4]);
+            bool cooling_method = true;
+            if(tasks[i][5] == "geo")
+                cooling_method = false;
+            else if(tasks[i][5] == "boltzmann")
+                cooling_method = true;
+            bool neighborhood_method = true;
+            if(tasks[i][6] == "swap")
+                neighborhood_method = false;
+            else if(tasks[i][6] == "invert")
+                neighborhood_method = true;
+            string shortest_path_weight = tasks[i][7];
+            string shortest_path = tasks[i][8];
             if (!load_data(graph_file_name))
             {
                 std::cout << "Cannot load graph from " << graph_file_name << " file." << endl;
             }
-            std::cout << "Computing TSP in " << graph_file_name << " graph repeated " << number_of_repeats << " times" << endl;
+            std::cout << "Computing TSP in " << graph_file_name << " graph repeated " << number_of_repeats << " times" << endl<<"alpha: "<<alpha<<endl<<"cooling method: "<<tasks[i][5]<<endl;
+            if(cooling_method)
+                cout<<"b: "<<b<<endl;
+            cout<<"neighborhood method: "<<tasks[i][6]<<endl<<endl;
             if (number_of_current_graph_vertices < 1)
             {
                 std::cout << "Cannot execute task. The array must to have at least 1 element.";
@@ -376,7 +407,7 @@ int main()
                 high_resolution_clock::time_point t_start = high_resolution_clock::now();
                 for (int j = 0; j < number_of_repeats; j++)
                 {
-                    answer = TSP_solve();
+                    answer = TSP_solve(alpha,b,era_length,cooling_method,neighborhood_method);
                 }
                 high_resolution_clock::time_point t_end = high_resolution_clock::now();
                 duration<double> time_span = duration_cast<duration<double>>(t_end - t_start);
