@@ -270,32 +270,26 @@ float initial_temperature(int divider_of_quantity = 5)
     int sum_of_costs = 0;
     random_device rd;
     default_random_engine rng(rd());
-    for(int i = 0; i < number_of_current_graph_vertices/divider_of_quantity; i++){
+    for (int i = 0; i < number_of_current_graph_vertices / divider_of_quantity; i++)
+    {
         vector<int> permutation;
         for (int j = 1; j < number_of_current_graph_vertices; j++)
             permutation.push_back(i);
         shuffle(permutation.begin(), permutation.end(), rng);
         sum_of_costs += cost_of_permutation(permutation);
     }
-    return sum_of_costs/(number_of_current_graph_vertices/divider_of_quantity);
+    return sum_of_costs / (number_of_current_graph_vertices / divider_of_quantity);
 }
 
-vector<int> initial_permutation(int permutation_quantity)
+vector<int> initial_permutation()
 {
     vector<int> permutation;
-    for (int i = 1; i < permutation_quantity; i++)
+    for (int i = 1; i < number_of_current_graph_vertices; i++)
         permutation.push_back(i);
     random_device rd;
     default_random_engine rng(rd());
     shuffle(permutation.begin(), permutation.end(), rng);
     return permutation;
-    // vector<int> permutation;
-    // for (int i = 1; i < permutation_quantity; i++)
-    //     permutation.push_back(i);
-    // random_device rd;
-    // default_random_engine rng(rd());
-    // shuffle(permutation.begin(), permutation.end(), rng);
-    // return permutation;
 }
 
 vector<int> swap_permutation(vector<int> permutation, int first_index, int second_index)
@@ -377,7 +371,7 @@ string print_vector(vector<int> printed_vector)
  */
 pair<vector<int>, int> TSP_solve(float alpha = 0.999, float b = 1, int era_length = 100, bool cooling_method = false, bool neighborhood_method = true)
 {
-    vector<int> permutation = initial_permutation(number_of_current_graph_vertices);
+    vector<int> permutation = initial_permutation();
     int cost = cost_of_permutation(permutation);
     int prev_cost = INT32_MAX;
     float min_temp = 0.000001; //minimal temperature - stop condition
