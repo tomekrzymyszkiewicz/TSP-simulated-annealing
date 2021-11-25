@@ -2,19 +2,12 @@
 #include <string.h>
 #include <fstream>
 #include <stdio.h>
-// #include <queue>
 #include <chrono>
 #include <vector>
 #include <random>
 #include <string>
 #include <sstream>
-// #include <climits>
-// #include <iterator>
 #include <algorithm>
-// #include <cctype>
-// #include <locale>
-// #include <cmath>
-// #include<sys/resource.h>
 #include <unistd.h>
 #include "structures.h"
 using namespace std;
@@ -267,6 +260,11 @@ float new_temp_geo(float temp, float alpha)
     return temp * alpha;
 }
 
+float new_temp_Boltzmann(float temp, float alpha, float b, int k)
+{
+    return temp/(alpha + b * log(k));
+}
+
 string print_vector(vector<int> printed_vector)
 {
     string answer;
@@ -282,20 +280,29 @@ string print_vector(vector<int> printed_vector)
  * TSP solving with simulated annealing method
  * 
  * @param alpha cooling parameter
+ * @paragraph b cooling parameter (for Boltzmann method)
  * @param era_length number of iterations to find the best solution for a given temperature
  * @param cooling_method 0 - geometrical cooling | 1 - Boltzmann
  * @param neighborhood_method 0 - swap | 1 - invert
  * @return pair of calculated path and weight
  */
-pair<vector<int>, int> TSP_solve(float alpha = 0.9, int era_length = 1, bool cooling_method = false, bool neighborhood_method = false)
+pair<vector<int>, int> TSP_solve(float alpha = 0.999,float b=1, int era_length = 100, bool cooling_method = false, bool neighborhood_method = false)
 {
     vector<int> permutation = initial_permutation(number_of_current_graph_vertices);
     int cost = cost_of_permutation(permutation);
+    int prev_cost = INT32_MAX;
     float min_temp = 0.000001; //minimal temperature - stop condition
     float current_temp = initial_temperature(cost, alpha);
-    while (current_temp > min_temp)
+    int same_cost_counter = 0;
+    int iteration_counter = 0;
+    while (current_temp > min_temp && same_cost_counter < 20)
     {
-        // printf("Current temp: %6lf| Cost: %6d\n",current_temp,cost);
+        if(prev_cost == cost)
+            same_cost_counter++;
+        else
+            same_cost_counter = 0;
+        prev_cost = cost;
+        printf("Current temp: %6lf| Cost: %6d\n",current_temp,cost);
         for (int i = 0; i < era_length; i++)
         {
             vector<int> new_permutation = neighborhood_permutation(permutation);
@@ -320,10 +327,13 @@ pair<vector<int>, int> TSP_solve(float alpha = 0.9, int era_length = 1, bool coo
                 }
             }
         }
-        current_temp = new_temp_geo(current_temp, alpha);
+        if(cooling_method)
+            current_temp = new_temp_geo(current_temp, alpha);
+        else
+            current_temp = new_temp_Boltzmann(current_temp, alpha, b , iteration_counter);
+        iteration_counter++;
+
     }
-
-
     permutation.insert(permutation.begin(), 0);
     permutation.push_back(0);
     return make_pair(permutation, cost);
