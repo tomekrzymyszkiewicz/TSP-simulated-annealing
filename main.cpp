@@ -9,6 +9,7 @@
 #include <sstream>
 #include <algorithm>
 #include <unistd.h>
+#include <iomanip>
 #include "structures.h"
 using namespace std;
 using namespace std::chrono;
@@ -394,7 +395,7 @@ pair<vector<int>, int> TSP_solve(float alpha = 0.999, float b = 1, int era_lengt
         else
             same_cost_counter = 0;
         prev_cost = cost;
-        printf("Current temp: %6lf| Cost: %6d\n", current_temp, cost);
+        cout<< "Current temp:"<<std::right << std::setw(12)<<current_temp<<"| Cost: "<<std::right << std::setw(8)<<cost<<"\t\r" << std::flush;
         for (int i = 0; i < era_length; i++)
         {
             vector<int> new_permutation;
@@ -474,6 +475,7 @@ int main()
             }
             std::cout << "Computing TSP in " << graph_file_name << " graph repeated " << number_of_repeats << " times" << endl
                       << "alpha: " << alpha << endl
+                      << "era_length: " << era_length << endl
                       << "cooling method: " << tasks[i][5] << endl;
             if (cooling_method)
                 cout << "b: " << b << endl;
