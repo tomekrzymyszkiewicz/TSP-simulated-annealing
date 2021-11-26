@@ -1,7 +1,7 @@
 OBJS	= main.o
 SOURCE	= main.cpp
 HEADER	= structures.h
-OUT	= ./a.out
+OUT	= ./main
 CC	 = g++
 FLAGS	 = -g3 -c -Wall
 LFLAGS	 = 
