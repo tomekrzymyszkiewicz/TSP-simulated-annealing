@@ -247,7 +247,7 @@ void load_config()
             task.push_back(shortest_path);
             tasks.push_back(task);
             cout << "Correclty loaded task: ";
-            for (int i = 0; i < task.size(); i++)
+            for (long unsigned int i = 0; i < task.size(); i++)
                 cout << task[i] << " ";
             cout << endl;
         }
@@ -382,7 +382,7 @@ pair<vector<int>, int> TSP_solve(float alpha = 0.999, float b = 1, int era_lengt
     vector<int> permutation = initial_permutation();
     int cost = cost_of_permutation(permutation);
     int prev_cost = INT32_MAX;
-    float min_temp = 0.000001; //minimal temperature - stop condition
+    // float min_temp = 0.000001; //minimal temperature - stop condition
     float current_temp = initial_temperature();
     int same_cost_counter = 0;
     int iteration_counter = 0;
