@@ -231,23 +231,25 @@ void load_config()
         if (graph_file_name.size() == 0 || number_of_repeats.size() == 0 || alpha.size() == 0 || b.size() == 0 || era_length.size() == 0 || cooling_method.size() == 0 || neighborhood_method.size() == 0 || shortest_path_weight.size() == 0)
         {
             std::cout << "Cannot load this task: " << loaded_line_of_task << endl;
-            break;
         }
-        vector<string> task;
-        task.push_back(graph_file_name);
-        task.push_back(number_of_repeats);
-        task.push_back(alpha);
-        task.push_back(b);
-        task.push_back(era_length);
-        task.push_back(cooling_method);
-        task.push_back(neighborhood_method);
-        task.push_back(shortest_path_weight);
-        task.push_back(shortest_path);
-        tasks.push_back(task);
-        cout << "Correclty loaded task: ";
-        for (int i = 0; i < task.size(); i++)
-            cout << task[i] << " ";
-        cout << endl;
+        else
+        {
+            vector<string> task;
+            task.push_back(graph_file_name);
+            task.push_back(number_of_repeats);
+            task.push_back(alpha);
+            task.push_back(b);
+            task.push_back(era_length);
+            task.push_back(cooling_method);
+            task.push_back(neighborhood_method);
+            task.push_back(shortest_path_weight);
+            task.push_back(shortest_path);
+            tasks.push_back(task);
+            cout << "Correclty loaded task: ";
+            for (int i = 0; i < task.size(); i++)
+                cout << task[i] << " ";
+            cout << endl;
+        }
     }
     fin.close();
     std::cout << "Config loaded correctly" << endl;
@@ -280,7 +282,7 @@ float initial_temperature(int divider_of_quantity = 5)
         for (int j = 1; j < number_of_current_graph_vertices; j++)
             permutation.push_back(j);
         shuffle(permutation.begin(), permutation.end(), rng);
-        sum_of_costs += abs(cost_of_permutation(prev_permutation)-cost_of_permutation(permutation));
+        sum_of_costs += abs(cost_of_permutation(prev_permutation) - cost_of_permutation(permutation));
         prev_permutation = permutation;
     }
     return sum_of_costs / (number_of_current_graph_vertices / divider_of_quantity);
@@ -434,6 +436,8 @@ pair<vector<int>, int> TSP_solve(float alpha = 0.999, float b = 1, int era_lengt
 int main()
 {
     load_config();
+    std::cout << "Tasks loaded.\nPress any key to continue...";
+    getchar();
     if (tasks.size() == 0)
     {
         std::cout << "No tasks found to be performed." << endl;
