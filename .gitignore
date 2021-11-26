@@ -30,3 +30,9 @@
 *.exe
 *.out
 *.app
+*orig
+main
+*.csv
+*/r/*
+*/m/*
+.vscode/*
