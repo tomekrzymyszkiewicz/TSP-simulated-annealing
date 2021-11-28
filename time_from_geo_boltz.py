@@ -19,6 +19,7 @@ def main():
     pllt.plot(X,Y_boltzmann,label='boltzmann')
     pllt.ylabel('Czas wykonania algorytmu [s]')
     pllt.xlabel('Liczba wierzchołków w grafie')
+    pllt.legend()
     pllt.show()
 
 
