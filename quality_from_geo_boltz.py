@@ -9,7 +9,7 @@ def main():
     if len(sys.argv)>1:
         data = pd.read_csv(str(sys.argv[1]),usecols=['graph_name','calculated_path','calculated_path_weight','defined_path_weight','cooling_method'])
     else:
-        data = pd.read_csv('wyniki_geo_boltz.csv',usecols=['graph_name','calculated_path','calculated_path_weight','defined_path_weight','cooling_method'])
+        data = pd.read_csv('wyniki.csv',usecols=['graph_name','calculated_path','calculated_path_weight','defined_path_weight','cooling_method'])
     data = np.array(data)
     num_of_vertices = np.array([data[i][1].count(' ') for i in range(len(data))])
     X = [num_of_vertices[i] for i in range(0,len(data),2)]
