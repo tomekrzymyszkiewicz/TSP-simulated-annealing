@@ -174,7 +174,7 @@ bool load_data(string file_name)
     }
     std::cout << "Loaded correctly graph with " << number_of_current_graph_vertices << " vertices" << endl
               << "Graph:" << endl;
-    current_graph_adjacency_matrix.print();
+    // current_graph_adjacency_matrix.print();
     fin.close();
     return true;
 }
