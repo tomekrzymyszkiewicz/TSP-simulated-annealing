@@ -16,8 +16,8 @@ def main():
     pllt.scatter(X,Y)
     for i in range(len(data)):
         pllt.annotate('alfa='+str(data[i][3]),(X[i],Y[i]))
-    pllt.xlabel('Stosunek błędu do wartości optymalnej')
-    pllt.ylabel('Współczynnik alfa')
+    pllt.ylabel('Stosunek błędu do wartości optymalnej')
+    pllt.xlabel('Współczynnik alfa')
     pllt.show()
 
 
