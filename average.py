@@ -46,7 +46,7 @@ def main():
             if val == unique_record:
                 defined_path = record[3]
                 defined_path_weight = record[4]
-                calculated_path = "0 0"
+                calculated_path = record[1]
                 calculated_path_weight += record[2]
                 time += record[5]
         time /= unique_record[1]
