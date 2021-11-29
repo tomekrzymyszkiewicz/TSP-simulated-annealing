@@ -514,7 +514,8 @@ int main()
                          << "Defined shortest path:    " << shortest_path << endl
                          << "Calculated weight: " << weight << endl
                          << "Defined weight:    " << shortest_path_weight << endl
-                         << "Time: " << ((double)time_span.count() / (double)number_of_repeats) << " s" << endl<<endl;
+                         << "Time: " << ((double)time_span.count() / (double)number_of_repeats) << " s" << endl
+                         << "Task " << i+1 << " from " << tasks.size() << " | Repeat " << j+1 << " from " << number_of_repeats << endl<<endl;
                     Result result = Result(graph_file_name, path, weight, shortest_path, stoi(shortest_path_weight), time_span.count(), number_of_repeats, alpha, b, era_length, tasks[i][5], tasks[i][6]);
                     results.push_back(result.toString());
                 }
