@@ -395,7 +395,7 @@ pair<vector<int>, int> TSP_solve(float alpha = 0.999, float b = 1, int era_lengt
         else
             same_cost_counter = 0;
         prev_cost = cost;
-        cout<< "Current temp:"<<std::right << std::setw(12)<<current_temp<<"| Cost: "<<std::right << std::setw(8)<<cost<<"\t\r" << std::flush;
+        cout << "Current temp:" << std::right << std::setw(12) << current_temp << "| Cost: " << std::right << std::setw(8) << cost << "\t\r" << std::flush;
         for (int i = 0; i < era_length; i++)
         {
             vector<int> new_permutation;
@@ -492,35 +492,35 @@ int main()
             else
             {
                 pair<vector<int>, int> answer;
-                high_resolution_clock::time_point t_start = high_resolution_clock::now();
                 for (int j = 0; j < number_of_repeats; j++)
                 {
+                    high_resolution_clock::time_point t_start = high_resolution_clock::now();
+
                     answer = TSP_solve(alpha, b, era_length, cooling_method, neighborhood_method);
+                    high_resolution_clock::time_point t_end = high_resolution_clock::now();
+                    duration<double> time_span = duration_cast<duration<double>>(t_end - t_start);
+                    int weight = answer.second;
+                    string path = "";
+                    std::vector<int>::iterator it = answer.first.begin();
+                    while (it != answer.first.end())
+                    {
+                        path += to_string(*it);
+                        path += " ";
+                        it++;
+                    }
+                    ltrim(path);
+                    rtrim(path);
+                    cout << "Calculated shortest path: " << path << endl
+                         << "Defined shortest path:    " << shortest_path << endl
+                         << "Calculated weight: " << weight << endl
+                         << "Defined weight:    " << shortest_path_weight << endl
+                         << "Time: " << ((double)time_span.count() / (double)number_of_repeats) << " s" << endl<<endl;
+                    Result result = Result(graph_file_name, path, weight, shortest_path, stoi(shortest_path_weight), time_span.count(), number_of_repeats, alpha, b, era_length, tasks[i][5], tasks[i][6]);
+                    results.push_back(result.toString());
                 }
-                high_resolution_clock::time_point t_end = high_resolution_clock::now();
-                duration<double> time_span = duration_cast<duration<double>>(t_end - t_start);
-                int weight = answer.second;
-                string path = "";
-                std::vector<int>::iterator it = answer.first.begin();
-                while (it != answer.first.end())
-                {
-                    path += to_string(*it);
-                    path += " ";
-                    it++;
-                }
-                ltrim(path);
-                rtrim(path);
-                cout << "Calculated shortest path: " << path << endl
-                     << "Defined shortest path:    " << shortest_path << endl
-                     << "Calculated weight: " << weight << endl
-                     << "Defined weight:    " << shortest_path_weight << endl
-                     << "Time: " << ((double)time_span.count() / (double)number_of_repeats) << " s" << endl;
-                Result result = Result(graph_file_name, path, weight, shortest_path, stoi(shortest_path_weight), time_span.count(), number_of_repeats, alpha, b, era_length, tasks[i][5], tasks[i][6]);
-                results.push_back(result.toString());
             }
         }
     }
-    std::cout << endl;
     save_results(results_file_name);
     std::cout << "Press any key to continue...";
     getchar();
