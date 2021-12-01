@@ -409,12 +409,10 @@ pair<vector<int>, int> TSP_solve(float alpha = 0.999, float b = 1, int era_lengt
     vector<int> permutation = initial_permutation();
     int cost = cost_of_permutation(permutation);
     int prev_cost = INT32_MAX;
-    // float min_temp = 0.000001; //minimal temperature - stop condition
     float current_temp = initial_temperature();
     int same_cost_counter = 0;
     int iteration_counter = 0;
     while (same_cost_counter < 50)
-    // while (current_temp > min_temp && same_cost_counter < 50)
     {
         iteration_counter++;
         if (prev_cost == cost)
@@ -507,6 +505,7 @@ int main()
             if (cooling_method)
                 std::cout << "b: " << b << endl;
             std::cout << "neighborhood method: " << tasks[i][6] << endl
+                      << "defined weight: " << shortest_path_weight << endl
                       << endl;
             if (number_of_current_graph_vertices < 1)
             {
@@ -540,6 +539,8 @@ int main()
                               << "Defined shortest path:    " << shortest_path << endl
                               << "Calculated weight: " << weight << endl
                               << "Defined weight:    " << shortest_path_weight << endl
+                              << "Error: " << 100*(weight - stoi(shortest_path_weight)) / stof(shortest_path_weight)<<"%"
+                              << endl
                               << "Time: " << ((double)time_span.count() / (double)number_of_repeats) << " s" << endl
                               << "Task " << i + 1 << " from " << tasks.size() << " | Repeat " << j + 1 << " from " << number_of_repeats << endl
                               << endl;
