@@ -194,7 +194,7 @@ void load_config()
     getline(fin, results_file_name);
     ltrim(results_file_name);
     rtrim(results_file_name);
-    cout << "Loaded result file name: " << results_file_name << endl;
+    std::cout << "Loaded result file name: " << results_file_name << endl;
     while (getline(fin, loaded_line_of_task))
     {
         vector<string> single_line = split(loaded_line_of_task, ' ');
@@ -246,10 +246,10 @@ void load_config()
             task.push_back(shortest_path_weight);
             task.push_back(shortest_path);
             tasks.push_back(task);
-            cout << "Correclty loaded task: ";
+            std::cout << "Correclty loaded task: ";
             for (long unsigned int i = 0; i < task.size(); i++)
-                cout << task[i] << " ";
-            cout << endl;
+                std::cout << task[i] << " ";
+            std::cout << endl;
         }
     }
     fin.close();
@@ -292,14 +292,41 @@ float initial_temperature(int divider_of_quantity = 5)
 vector<int> initial_permutation()
 {
     vector<int> permutation;
+    vector<int> unused;
     for (int i = 1; i < number_of_current_graph_vertices; i++)
-        permutation.push_back(i);
-    random_device rd;
-    default_random_engine rng(rd());
-    shuffle(permutation.begin(), permutation.end(), rng);
+        unused.push_back(i);
+    int prev_v = 0;
+    for (int i = 0; i < number_of_current_graph_vertices - 1; i++)
+    {
+        int min_v = 0;
+        int min_cost = INT32_MAX;
+        auto it = unused.begin();
+        while (it != unused.end())
+        {
+            if (current_graph_adjacency_matrix.matrix[prev_v][(*it)] < min_cost && i != (*it))
+            {
+                min_cost = current_graph_adjacency_matrix.matrix[i][(*it)];
+                min_v = (*it);
+            }
+            ++it;
+        }
+        permutation.push_back(min_v);
+        it = unused.begin();
+        while (it != unused.end())
+        {
+            if ((*it) == min_v)
+            {
+                it = unused.erase(it);
+            }
+            else
+            {
+                ++it;
+            }
+        }
+        prev_v = min_v;
+    }
     return permutation;
 }
-
 vector<int> swap_permutation(vector<int> permutation, int first_index, int second_index)
 {
     std::iter_swap(permutation.begin() + first_index, permutation.begin() + second_index);
@@ -395,7 +422,7 @@ pair<vector<int>, int> TSP_solve(float alpha = 0.999, float b = 1, int era_lengt
         else
             same_cost_counter = 0;
         prev_cost = cost;
-        cout << "Current temp:" << std::right << std::setw(12) << current_temp << "| Cost: " << std::right << std::setw(8) << cost << "\t\r" << std::flush;
+        std::cout << "Current temp:" << std::right << std::setw(12) << current_temp << "| Cost: " << std::right << std::setw(8) << cost << "\t\r" << std::flush;
         for (int i = 0; i < era_length; i++)
         {
             vector<int> new_permutation;
@@ -478,9 +505,9 @@ int main()
                       << "era_length: " << era_length << endl
                       << "cooling method: " << tasks[i][5] << endl;
             if (cooling_method)
-                cout << "b: " << b << endl;
-            cout << "neighborhood method: " << tasks[i][6] << endl
-                 << endl;
+                std::cout << "b: " << b << endl;
+            std::cout << "neighborhood method: " << tasks[i][6] << endl
+                      << endl;
             if (number_of_current_graph_vertices < 1)
             {
                 std::cout << "Cannot execute task. The array must to have at least 1 element.";
@@ -495,7 +522,6 @@ int main()
                 for (int j = 0; j < number_of_repeats; j++)
                 {
                     high_resolution_clock::time_point t_start = high_resolution_clock::now();
-
                     answer = TSP_solve(alpha, b, era_length, cooling_method, neighborhood_method);
                     high_resolution_clock::time_point t_end = high_resolution_clock::now();
                     duration<double> time_span = duration_cast<duration<double>>(t_end - t_start);
@@ -510,12 +536,13 @@ int main()
                     }
                     ltrim(path);
                     rtrim(path);
-                    cout << "Calculated shortest path: " << path << endl
-                         << "Defined shortest path:    " << shortest_path << endl
-                         << "Calculated weight: " << weight << endl
-                         << "Defined weight:    " << shortest_path_weight << endl
-                         << "Time: " << ((double)time_span.count() / (double)number_of_repeats) << " s" << endl
-                         << "Task " << i+1 << " from " << tasks.size() << " | Repeat " << j+1 << " from " << number_of_repeats << endl<<endl;
+                    std::cout << "Calculated shortest path: " << path << endl
+                              << "Defined shortest path:    " << shortest_path << endl
+                              << "Calculated weight: " << weight << endl
+                              << "Defined weight:    " << shortest_path_weight << endl
+                              << "Time: " << ((double)time_span.count() / (double)number_of_repeats) << " s" << endl
+                              << "Task " << i + 1 << " from " << tasks.size() << " | Repeat " << j + 1 << " from " << number_of_repeats << endl
+                              << endl;
                     Result result = Result(graph_file_name, path, weight, shortest_path, stoi(shortest_path_weight), time_span.count(), number_of_repeats, alpha, b, era_length, tasks[i][5], tasks[i][6]);
                     results.push_back(result.toString());
                 }
