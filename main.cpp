@@ -273,15 +273,15 @@ float initial_temperature(int divider_of_quantity = 5)
     int sum_of_costs = 0;
     random_device rd;
     default_random_engine rng(rd());
-    vector<int> prev_permutation;
+    vector<int> prev_permutation, permutation;
     for (int i = 1; i < number_of_current_graph_vertices; i++)
+    {
         prev_permutation.push_back(i);
+        permutation.push_back(i);
+    }
     shuffle(prev_permutation.begin(), prev_permutation.end(), rng);
     for (int i = 0; i < number_of_current_graph_vertices / divider_of_quantity; i++)
     {
-        vector<int> permutation;
-        for (int j = 1; j < number_of_current_graph_vertices; j++)
-            permutation.push_back(j);
         shuffle(permutation.begin(), permutation.end(), rng);
         sum_of_costs += abs(cost_of_permutation(prev_permutation) - cost_of_permutation(permutation));
         prev_permutation = permutation;
@@ -539,7 +539,7 @@ int main()
                               << "Defined shortest path:    " << shortest_path << endl
                               << "Calculated weight: " << weight << endl
                               << "Defined weight:    " << shortest_path_weight << endl
-                              << "Error: " << 100*(weight - stoi(shortest_path_weight)) / stof(shortest_path_weight)<<"%"
+                              << "Error: " << 100 * (weight - stoi(shortest_path_weight)) / stof(shortest_path_weight) << "%"
                               << endl
                               << "Time: " << ((double)time_span.count() / (double)number_of_repeats) << " s" << endl
                               << "Task " << i + 1 << " from " << tasks.size() << " | Repeat " << j + 1 << " from " << number_of_repeats << endl
