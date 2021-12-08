@@ -19,4 +19,4 @@ The program reads data from the config.ini configuration file in the following s
 - cooling_method - *geo* or *boltzmann*
 - neighborhood method - *swap* or *invert*
 - correct TSP path weight - integer number
-- correct TSP path> - sequence of integers number separated by space
+- correct TSP path - sequence of integers number separated by space
