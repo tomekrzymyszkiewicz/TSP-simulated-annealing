@@ -12,11 +12,11 @@ def main():
         data = pd.read_csv('wyniki.csv',usecols=['graph_name','calculated_path_weight','defined_path_weight','alpha'])
     data = np.array(data)
     X = [data[i][3] for i in range(len(data))]
-    Y = [(data[i][1]-data[i][2])/data[i][1]for i in range(len(data))]
+    Y = [100*(data[i][1]-data[i][2])/data[i][1]for i in range(len(data))]
     pllt.scatter(X,Y)
     for i in range(len(data)):
-        pllt.annotate('alfa='+str(data[i][3]),(X[i],Y[i]))
-    pllt.ylabel('Stosunek błędu do wartości optymalnej')
+        pllt.annotate(''+str(data[i][3]),(X[i],Y[i]), rotation=45)
+    pllt.ylabel('Stosunek błędu do wartości optymalnej [%]')
     pllt.xlabel('Współczynnik alfa')
     pllt.show()
 
