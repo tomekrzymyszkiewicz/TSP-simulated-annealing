@@ -8,13 +8,10 @@ def main():
     if len(sys.argv)>1:
         file_name = str(sys.argv[1])
     else:
-        file_name = 'average_of_wyniki_swap_invert.csv'
+        file_name = 'wyniki.csv'
     data = pd.read_csv(file_name,usecols=['graph_name','calculated_path','calculated_path_weight','defined_path_weight','time','neighborhood_method'])
     data = np.array(data)
-    # max_num_of_vertices = max([max([graph[1].count(' ')]) for graph in data])
-    # min_num_of_vertices = min([min([graph[1].count(' ')]) for graph in data])
     X =  np.array([data[i][1].count(' ') for i in range(0,len(data),2)])
-    # X = list(range(min_num_of_vertices,max_num_of_vertices))
     Y_quality_swap = [(data[i][2]-data[i][3])/data[i][2] for i in range(len(data)) if data[i][5] == 'swap']
     Y_quality_invert = [(data[i][2]-data[i][3])/data[i][2] for i in range(len(data)) if data[i][5] == 'invert']
     Y_time_swap = [data[i][4] for i in range(len(data)) if data[i][5] == 'swap']
@@ -31,10 +28,6 @@ def main():
     ax2.plot(X,Y_time_swap,color=col2,marker='o',linestyle='solid',linewidth=3,label='swap(czas)')
     ax2.plot(X,Y_time_invert,color=col2,marker='o',linestyle='dashed',linewidth=3,label='invert(czas)')
     ax2.set_ylabel('Czas wykonania algorytmu [s]',color=col2)
-    # for i in range(len(data)):
-    #     ax.annotate(''+str(data[i][4]),(X[i],Y_quality[i]), rotation=45)
-    # for i in range(len(data)):
-    #     ax2.annotate(''+str(data[i][4]),(X[i],Y_time[i]), rotation=45)
     ax2.legend()
     plt.show()
     
