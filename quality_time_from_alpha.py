@@ -20,9 +20,14 @@ def main():
     ax.plot(X,Y_quality,color=col1,marker='o',linewidth=3)
     ax.set_ylabel('Stosunek błędu do wartości optymalnej [%]',color=col1)
     ax.set_xlabel('Współczynnik alfa')
+    
     ax2 = ax.twinx()
     ax2.plot(X,Y_time,color=col2,marker='o',linewidth=3)
     ax2.set_ylabel('Czas wykonania algorytmu [s]',color=col2)
+    for i in range(len(data)):
+        ax.annotate(''+str(data[i][4]),(X[i],Y_quality[i]), rotation=45)
+    for i in range(len(data)):
+        ax2.annotate(''+str(data[i][4]),(X[i],Y_time[i]), rotation=45)
     plt.show()
 
 
