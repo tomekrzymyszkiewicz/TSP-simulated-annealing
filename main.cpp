@@ -268,7 +268,7 @@ int cost_of_permutation(vector<int> permutation)
     return cost;
 }
 
-float initial_temperature(int divider_of_quantity = 5)
+float initial_temperature(int divider_of_quantity = 1)
 {
     int sum_of_costs = 0;
     random_device rd;
@@ -404,7 +404,7 @@ string print_vector(vector<int> printed_vector)
  * @param neighborhood_method 0 - swap | 1 - invert
  * @return pair of calculated path and weight
  */
-pair<vector<int>, int> TSP_solve(float alpha = 0.999, float b = 1, int era_length = 100, bool cooling_method = false, bool neighborhood_method = true)
+pair<vector<int>, int> TSP_solve(float alpha = 0.999, float b = 1, int era_length = 100, bool cooling_method = false, bool neighborhood_method = true,string defined_cost="1")
 {
     vector<int> permutation = initial_permutation();
     int cost = cost_of_permutation(permutation);
@@ -420,11 +420,11 @@ pair<vector<int>, int> TSP_solve(float alpha = 0.999, float b = 1, int era_lengt
         else
             same_cost_counter = 0;
         prev_cost = cost;
-        std::cout << "Current temp:" << std::right << std::setw(12) << current_temp << "| Cost: " << std::right << std::setw(8) << cost << "\t\r" << std::flush;
+        std::cout << "Current temp:" << std::right << std::setw(12) << current_temp << "| Cost: " << std::right << std::setw(8) << cost <<"| Error: " << std::right << std::setw(8) << 100 * (cost - stoi(defined_cost)) / stof(defined_cost) <<"%"<< "\t\r" << std::flush;
         for (int i = 0; i < era_length; i++)
         {
             vector<int> new_permutation;
-            if (!cooling_method)
+            if (!neighborhood_method)
                 new_permutation = neighborhood_permutation_swap(permutation);
             else
                 new_permutation = neighborhood_permutation_invert(permutation);
@@ -521,7 +521,7 @@ int main()
                 for (int j = 0; j < number_of_repeats; j++)
                 {
                     high_resolution_clock::time_point t_start = high_resolution_clock::now();
-                    answer = TSP_solve(alpha, b, era_length, cooling_method, neighborhood_method);
+                    answer = TSP_solve(alpha, b, era_length, cooling_method, neighborhood_method,shortest_path_weight);
                     high_resolution_clock::time_point t_end = high_resolution_clock::now();
                     duration<double> time_span = duration_cast<duration<double>>(t_end - t_start);
                     int weight = answer.second;
