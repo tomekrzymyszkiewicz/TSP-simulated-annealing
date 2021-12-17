@@ -12,8 +12,8 @@ def main():
     data = pd.read_csv(file_name,usecols=['graph_name','calculated_path','calculated_path_weight','defined_path_weight','time','neighborhood_method'])
     data = np.array(data)
     X =  np.array([data[i][1].count(' ') for i in range(0,len(data),2)])
-    Y_quality_swap = [(data[i][2]-data[i][3])/data[i][2] for i in range(len(data)) if data[i][5] == 'swap']
-    Y_quality_invert = [(data[i][2]-data[i][3])/data[i][2] for i in range(len(data)) if data[i][5] == 'invert']
+    Y_quality_swap = [100*(data[i][2]-data[i][3])/data[i][2] for i in range(len(data)) if data[i][5] == 'swap']
+    Y_quality_invert = [100*(data[i][2]-data[i][3])/data[i][2] for i in range(len(data)) if data[i][5] == 'invert']
     Y_time_swap = [data[i][4] for i in range(len(data)) if data[i][5] == 'swap']
     Y_time_invert = [data[i][4] for i in range(len(data)) if data[i][5] == 'invert']
     col1 = 'steelblue'
