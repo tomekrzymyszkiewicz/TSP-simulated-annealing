@@ -13,7 +13,7 @@ def main():
     y = [data[i][1]for i in range(len(data))]
     plt.plot(x, y)
     plt.xlabel('Liczba wierzchołków w grafie')
-    plt.ylabel('Maksymalne zużycie pamięci[MB]')
+    plt.ylabel('Maksymalne zużycie pamięci[KB]')
     plt.show()
 
 
